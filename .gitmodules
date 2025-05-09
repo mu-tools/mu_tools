@@ -1,0 +1,12 @@
+[submodule "mu_log"]
+	path = mu_log
+	url = git@github.com:mu-tools/mu_log.git
+[submodule "mu_store"]
+	path = mu_store
+	url = git@github.com:mu-tools/mu_store.git
+[submodule "mu_string"]
+	path = mu_string
+	url = git@github.com:mu-tools/mu_string.git
+[submodule "mu_time"]
+	path = mu_time
+	url = git@github.com:mu-tools/mu_time.git
