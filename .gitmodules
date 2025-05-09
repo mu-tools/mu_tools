@@ -10,3 +10,6 @@
 [submodule "mu_time"]
 	path = mu_time
 	url = git@github.com:mu-tools/mu_time.git
+[submodule "mu_thunk"]
+	path = mu_thunk
+	url = git@github.com:mu-tools/mu_thunk.git
