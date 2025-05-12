@@ -13,3 +13,6 @@
 [submodule "mu_thunk"]
 	path = mu_thunk
 	url = git@github.com:mu-tools/mu_thunk.git
+[submodule "mu_sched"]
+	path = mu_sched
+	url = https://github.com/mu-tools/mu_sched.git
