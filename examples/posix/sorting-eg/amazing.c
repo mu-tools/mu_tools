@@ -11,19 +11,6 @@
  *     - A custom case-insensitive comparison
  */
 
-/**
-To compile and run:
-
-cc -Wall -o amazing \
-  -I../../../mu_store/inc \
-  -I../../../mu_string/inc \
-  amazing.c \
-  ../../../mu_store/src/mu_pool.c \
-  ../../../mu_store/src/mu_pvec.c \
-  ../../../mu_store/src/mu_store.c \
-  ../../../mu_string/src/mu_string.c ; ./amazing  ; rm -f ./amazing
-*/
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,9 +29,7 @@ static const char kInput[] =
     "magnificently unmoving, butterflies resting";
 
 // Backing stores for our pool/vector
-static mu_pool_t s_token_pool;
 static mu_string_t s_token_store[MAX_TOKENS];
-static mu_pvec_t s_words;
 static void *s_word_store[MAX_TOKENS];
 
 /**
@@ -76,7 +61,6 @@ static bool is_whitespace(char ch, void *arg) {
  * @param pa Pointer to a stored mu_string_t*.
  * @param pb Pointer to a stored mu_string_t*.
  * @return <0 if *sa < *sb, 0 if equal, >0 if *sa > *sb.
- *         If the common prefix is equal, shorter string comes first.
  */
 static int case_insensitive_compare(const void *pa, const void *pb) {
     // pa, pb are pointers to mu_string_t*
@@ -96,29 +80,35 @@ static int case_insensitive_compare(const void *pa, const void *pb) {
 }
 
 int main(void) {
+    mu_pool_t token_pool;  // a resource pool of mu_string_t items
+    mu_pvec_t words;       // a vector of pointers to mu_string_t items
+
     // 1) Initialize pool and pointer vector
     printf("Initializing...\n");
-    if (!mu_pool_init(&s_token_pool, s_token_store, MAX_TOKENS,
+    if (!mu_pool_init(&token_pool, s_token_store, MAX_TOKENS,
                       sizeof(s_token_store[0]))) {
         error_quit("token pool init failed");
     }
-    if (!mu_pvec_init(&s_words, s_word_store, MAX_TOKENS)) {
+    if (!mu_pvec_init(&words, s_word_store, MAX_TOKENS)) {
         error_quit("word vector init failed");
     }
 
-    // 2) Break input into whitespace-delimited words
+    // 2) Read entire source string into one long mu_string_t as input
     printf("Reading input: '");
     mu_string_t remaining = mu_string_from_cstr(kInput);
     print_slice(remaining);
     printf("'\n");
 
+    // 3) Break input into whitespace-delimited words
     printf("Parsing slices...\n");
     while (true) {
+        // Trim any leading whitespace from the input string
         remaining = mu_string_ltrim(remaining, is_whitespace, NULL);
-        if (mu_string_is_empty(remaining))
+        if (mu_string_is_empty(remaining)) {
             break;
+        }
 
-        // Split off one word, leaving the rest in `remaining`
+        // Slice off one word, leaving the rest in `remaining`
         mu_string_t temp_slice =
             mu_string_split_by_pred(remaining, &remaining, is_whitespace, NULL);
         // now `temp_slice` is either up to the next delimiter, or the entire
@@ -126,29 +116,29 @@ int main(void) {
         // or empty if we just consumed the last token.
 
         // Allocate a slice from our pool and store the slice
-        mu_string_t *word_slice = mu_pool_alloc(&s_token_pool);
+        mu_string_t *word_slice = mu_pool_alloc(&token_pool);
         if (!word_slice) {
             error_quit("out of token slices");
         }
         *word_slice = temp_slice;
 
         // Append to our vector of word‐slices
-        if (mu_pvec_push(&s_words, word_slice) != MU_STORE_ERR_NONE) {
+        if (mu_pvec_push(&words, word_slice) != MU_STORE_ERR_NONE) {
             error_quit("word vector push failed");
         }
     }
 
     // 3) Sort slices using case_insensitive_compare
     printf("Sorting slices...\n");
-    if (mu_pvec_sort(&s_words, case_insensitive_compare) != MU_STORE_ERR_NONE) {
+    if (mu_pvec_sort(&words, case_insensitive_compare) != MU_STORE_ERR_NONE) {
         error_quit("sort failed");
     }
 
     // 4) Print sorted slices, separated by a space
     printf("Printing output: '");
-    for (size_t i = 0, n = mu_pvec_count(&s_words); i < n; ++i) {
+    for (size_t i = 0, n = mu_pvec_count(&words); i < n; ++i) {
         mu_string_t *word_slice;
-        if (mu_pvec_ref(&s_words, i, (void **)&word_slice) !=
+        if (mu_pvec_ref(&words, i, (void **)&word_slice) !=
             MU_STORE_ERR_NONE) {
             error_quit("ref failed");
         }
