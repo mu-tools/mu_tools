@@ -42,7 +42,8 @@
 #define DELAY_MAX_MS (2 * 60 * 60 * 1000) // 2 hours
 
 typedef struct {
-    mu_thunk_t thunk;      /**< the oblique_1 deferrable function to invoke. */
+    mu_thunk_t thunk;         /**< the oblique_1 deferrable function */
+    mu_time_abs_t started_at; /**< time at which user first pressed button */
 } oblique_1_t;
 
 // *****************************************************************************
@@ -70,24 +71,32 @@ void oblique_1_init(void) {
     printf("####################\n"
            "# Oblique Strategies\n"
            "####################\n"
-           "Press user button or just be patient...\n\n");
+           "Press user button to get started:");
 
     mu_thunk_init(&s_oblique_1.thunk, oblique_1_fn); // bind oblique_1_fn to thunk
-    rand_lcg_seed(mu_time_now());                    // seed random # generator
 
     EIC_InterruptEnable(EIC_PIN_15);
     EIC_CallbackRegister(EIC_PIN_15, button_cb, 0);
-    mu_sched_now(&s_oblique_1.thunk);               // schedule initial call
+
+    // Nothing will happen until user presses button to schedule initial call.
 }
 
 // *****************************************************************************
 // Private (static) code
 
 static void oblique_1_fn(mu_thunk_t *thunk, void *args) {
+    // Arrive here when a delayed thunk's time arrives or on user button press.
     oblique_1_t *oblique_1 = (oblique_1_t *)thunk;
 
-    // Arrive here either when a delayed thunk's time arrived or because an
-    // impatient user pressed the button.
+    if (oblique_1->started_at == 0) {
+        // To avoid having the random number generator always start with the
+        // same value, introduce indeterminacy by waiting for the user to press
+        // the button.
+        oblique_1->started_at = mu_time_now();
+        rand_lcg_seed(oblique_1->started_at);  // seed random # generator
+        printf("\nPress button for an Oblique Strategy, or just wait...\n\n");
+    }
+
     LED_On();
 
     // (1) Remove any previously scheduled events to avoid build-up
