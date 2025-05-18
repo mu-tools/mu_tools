@@ -70,6 +70,11 @@ void rand_lcg_seed(uint32_t seed);
  */
 uint32_t rand_lcg(void);
 
+/**
+ * @brief generate a pseudorandom number between min (inclusive) and max (exclusive)
+ */
+uint32_t rand_lcg_range(uint32_t min, uint32_t max);
+
 // *****************************************************************************
 // End of file
 

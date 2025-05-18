@@ -1,3 +1,6 @@
 .DS_Store
-/examples/mplab-x/blinky-1/blink-1.X/build/
-/examples/mplab-x/blinky-1/blink-1.X/dist/
+*.X/build/
+*.X/dist/
+*.X/debug/
+*.X/.generated_files/
+
