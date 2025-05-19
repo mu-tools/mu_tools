@@ -22,11 +22,17 @@
  * SOFTWARE.
  */
 
+/**
+ * To enable logging, include -DMU_LOG_ENABLE_FORMATTED in the compile
+ * commands.
+ */
+
 // *****************************************************************************
 // Includes
 
 #include "app.h"
 
+#include "mu_log.h"
 #include "mu_pool.h"
 #include "mu_store.h"
 #include "mu_pvec.h"
@@ -62,6 +68,9 @@ static mu_spsc_t s_isr_queue;     // the interrupt queue
 // Public code
 
 void APP_Initialize(void) {
+    MU_LOG_SET_FN(mu_log_stdout_fn);  // use generic logging function
+    // MU_LOG_SET_THRESHOLD(MU_LOG_LEVEL_DEBUG); // uncomment for MU_LOG_DEBUG
+
     mu_pool_init(&s_event_pool, event_pool_store, MAX_TASKS, sizeof(mu_event_t));
     mu_pvec_init(&s_event_queue, event_queue_store, MAX_TASKS);
     mu_pqueue_init(&s_asap_queue, asap_queue_store, MAX_TASKS);

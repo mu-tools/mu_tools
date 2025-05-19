@@ -33,5 +33,5 @@ MP_CPPC_DIR="/Applications/microchip/xc32/v4.35/bin"
 MP_AS_DIR="/Applications/microchip/xc32/v4.35/bin"
 MP_LD_DIR="/Applications/microchip/xc32/v4.35/bin"
 MP_AR_DIR="/Applications/microchip/xc32/v4.35/bin"
-DFP_DIR=/Applications/microchip/mplabx/v6.20/packs/Microchip/SAMD21_DFP/3.6.144
 CMSIS_DIR=/Users/r/.mchp_packs/ARM/CMSIS/5.8.0
+DFP_DIR=/Applications/microchip/mplabx/v6.20/packs/Microchip/SAMD21_DFP/3.6.144

@@ -1,5 +1,10 @@
+# macOS artifacts
 .DS_Store
+
+# MPLAB.X artifacts
 **/*.X/build/
 **/*.X/dist/
 **/*.X/debug/
 **/*.X/.generated_files/
+**/*.X/nbproject/private/private.xml
+

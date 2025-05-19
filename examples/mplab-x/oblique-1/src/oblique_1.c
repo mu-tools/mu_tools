@@ -26,12 +26,14 @@
 // Includes
 
 #include "oblique_1.h"
+#include "strategies.h"
+
 #include "definitions.h"  // include Microchip Harmony definitions
+#include "mu_log.h"
 #include "mu_sched.h"
 #include "mu_thunk.h"
 #include "mu_time.h"
 #include "rand_lcg.h"
-#include "strategies.h"
 #include <stdio.h>
 
 // *****************************************************************************
@@ -93,6 +95,7 @@ static void oblique_1_fn(mu_thunk_t *thunk, void *args) {
         // same value, introduce indeterminacy by waiting for the user to press
         // the button.
         oblique_1->started_at = mu_time_now();
+        MU_LOG_INFO("Random seed = %lu", oblique_1->started_at);
         rand_lcg_seed(oblique_1->started_at);  // seed random # generator
         printf("\nPress button for an Oblique Strategy, or just wait...\n\n");
     }
@@ -107,6 +110,7 @@ static void oblique_1_fn(mu_thunk_t *thunk, void *args) {
 
     // (3) Schedule a random time to print the next Oblique Strategy
     uint32_t delay_ms = rand_lcg_range(DELAY_MIN_MS, DELAY_MAX_MS);
+    MU_LOG_DEBUG("Next strategy in %f seconds", delay_ms / 1000.0);
     mu_sched_in(&oblique_1->thunk, mu_time_rel_from_millis(delay_ms));
 
     LED_Off();
