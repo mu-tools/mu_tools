@@ -70,14 +70,14 @@ float mu_time_rel_to_seconds(mu_time_rel_t delta_t) {
     return (float)delta_t / (float)RTC_COUNTER_CLOCK_FREQUENCY;
 }
 
-mu_time_rel_t mu_time_rel_from_millis(uint32_t milliseconds) {
-    // 1 ms = RTC_FREQ / 1000 ticks
-    return (mu_time_rel_t)(milliseconds * RTC_COUNTER_CLOCK_FREQUENCY / 1000U);
+mu_time_rel_t mu_time_rel_from_millis(int32_t milliseconds) {
+    int64_t wide = (int64_t)milliseconds * (int64_t)RTC_COUNTER_CLOCK_FREQUENCY;
+    return (mu_time_rel_t)(wide / 1000);
 }
 
-uint32_t mu_time_rel_to_millis(mu_time_rel_t delta_t) {
-    // multiply first to preserve fractions, then divide
-    return (uint32_t)(delta_t * 1000 / RTC_COUNTER_CLOCK_FREQUENCY);
+int32_t mu_time_rel_to_millis(mu_time_rel_t tics) {
+    int64_t wide = (int64_t)tics * 1000;
+    return (int32_t)(wide / RTC_COUNTER_CLOCK_FREQUENCY);
 }
 
 // *****************************************************************************
