@@ -16,6 +16,3 @@
 [submodule "mu_sched"]
 	path = mu_sched
 	url = https://github.com/mu-tools/mu_sched.git
-[submodule "mu_stream"]
-	path = mu_stream
-	url = https://github.com/mu-tools/mu_stream.git
